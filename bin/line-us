@@ -1,0 +1,32 @@
+#!/usr/bin/env node
+
+const repl = require("repl");
+const chalk = require("chalk");
+const connect = require("../main");
+
+const bold = chalk.bold;
+
+const write = (...params) => process.stdout.write(...params);
+
+const main = async () => {
+  write(`Connecting to ${bold("lineus")}...`);
+  global.lineus = await connect();
+  write("connected.");
+
+  console.log(`
+
+Type ${bold("lineus")} to issues commands.
+  e.g. ${bold("lineus.home()")} to home the arm.
+
+Type ${bold(".exit")} to disconnect and quit.
+`);
+
+  const session = repl.start("line-us> ");
+  session.on("exit", async () => {
+    write("\nDisconnecting...");
+    await lineus.disconnect();
+    write("goodbye");
+  });
+};
+
+main();
